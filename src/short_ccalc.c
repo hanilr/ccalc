@@ -21,6 +21,19 @@ struct symbols_positions_lengths
 
 int main(int argc, char *argv[])
 {
+    if(argc == 2 && strcmp(argv[1], "-help") == 0)
+    {
+        printf("%s[Guide] %sThis is a CLI (COMMAND LINE INTERFACE) calculator.\nFull guide at %swww.github.com/hanilr/ccalc.git\n", colorfg_green, colorfg_white, esc_reset);
+        printf("%s[USE]%s ` ccalc + 1 2 ` or ` calc + 1 2 - 2 3 * 3 4 / 4 5 `\n%s[False]%s ` ccalc 1 2 + ` or ` ccalc 1 + 2 - 2 * 3 / 4 `%s", colorfg_green, colorfg_white, colorfg_red, colorfg_white, esc_reset);
+        printf("\n%s[Original repository: www.github.com/hanilr/ccalc.git]%s\n", colorfg_white, esc_reset);
+        return 0;
+    }
+    else if(strcmp(argv[1], "+") == 1 || strcmp(argv[1], "-") == 1 || strcmp(argv[1], "x") == 1 || strcmp(argv[1], "/") == 1)
+    {
+        print_error("First argument won't be a number!");
+        return 1;
+    }
+
     double result = 0;
     int operator_count = 0;
     struct symbols_positions_lengths spl[16];
@@ -42,6 +55,15 @@ int main(int argc, char *argv[])
     { 
         for(int i = 0; operator_count-1 > i; i+=1) { spl[i].symbol_len = spl[i+1].symbol_pos - spl[i].symbol_pos - 1; }
         spl[operator_count-1].symbol_len = (argc-1) - spl[operator_count-1].symbol_pos;
+    }
+
+    for(int i = 0; operator_count > i; i+=1)
+    {
+        if(spl[i].symbol_len < 2)
+        {
+            print_error("Operator numbers won't be lesser then 2!");
+            return 1;
+        }
     }
 
     for(int i = 0; operator_count > i; i+=1)

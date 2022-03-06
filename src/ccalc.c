@@ -27,6 +27,7 @@ struct symbols_positions_lengths // IF USER TYPED MULTIPLE OPERATION OR MORE THA
     int symbol; // OPERATION SYMBOL
     int symbol_pos; // OPERATION SYMBOL POSITION
     int symbol_len; // OPERATION SYMBOL RESPONSIBILITY LENGTH
+    int result_buffer; // OPERATION RESULT BUFFER
 }; // VARIABLE NAME CASE IS 'snake_case'
 
 // IF THE MAIN FUNCTION WAS ON THE TOP OF THE CODE, THE NAME OF THE OTHER FUNCTIONS SHOULD HAVE DEFINED 
@@ -38,149 +39,82 @@ int main(int argc, char *argv[])
     int operator_count = 0; // HOW MANY OPERATOR WANTED TO USE?
     struct symbols_positions_lengths spl[16]; // STRUCT DEFINED AS 'spl' 17 TIMES
 
-    for(int i = 1; argc > i; i+=1) // WILL LOOP ARGC-1 TIMES (IN TERMINAL NAME OF THE PROGRAM COUNT TOO, SO -1 FOR ARGC)
+    // OPERATOR COUNT AND VALUE ASSIGN SECTION
+    for(int i = 1; argc > i; i+=1)  // WILL LOOP ARGC-1 TIMES (IN TERMINAL NAME OF THE PROGRAM COUNT TOO, SO -1 FOR ARGC)
     {
-        if(strcmp(argv[i], "+") == 0) // IF "+" EXIST IN 'argv[i]' WILL RETURN 0 (TRUE = 0, FALSE = 1)
-        {
-            int count = 1; // THIS VARIABLE WILL COUNT HOW MANY NUMBER IN OPERATION
-            while(1) // INFINITE LOOP. IF THERE WAS NO 'break;' IN THE FUNCTION IT WOULD GO ON SO FAR. BUT IT WILL END WITH STACK OVERFLOW
-            {
-                // IF THERE IS A SYMBOL AFTER OPERATION NUMBERS OR IF ARGUMENTS OVER THAN BREAK THE LOOP
-                if(strcmp(argv[i+count], "+") == 0) { break; }
-                else if(strcmp(argv[i+count], "-") == 0) { break; }
-                else if(strcmp(argv[i+count], "x") == 0) { break; }
-                else if(strcmp(argv[i+count], "/") == 0) { break; }
-                else { count+=1; } // IF THERE IS NO SYMBOL THAN CONTINUE TO NEXT ARGUMENT
-                if(i + count == argc) { break; } // IF ARGUMENTS OVER THAN BREAK THE LOOP
-            }
-            spl[i-1].symbol = '+'; // ADDITION SYMBOL
-            spl[i-1].symbol_pos = i; // SYMBOL POSITION
-            spl[i-1].symbol_len = count-1; // OPERATION NUMBER COUNT
-            operator_count+=1; // INCREASE THE COUNT AFTER FINISH LOOP
+        if(strcmp(argv[i], "+") == 0 || strcmp(argv[i], "-") == 0 || strcmp(argv[i], "x") == 0 || strcmp(argv[i], "/") == 0)
+        { // IF THERE IS A SYMBOL OF OPERATION THEN ASSIGN THE VALUE TO STRUCT ARRAY
+            if(strcmp(argv[i], "+") == 0) { spl[operator_count].symbol = '+'; }
+            else if(strcmp(argv[i], "-") == 0) { spl[operator_count].symbol = '-'; }
+            else if(strcmp(argv[i], "x") == 0) { spl[operator_count].symbol = 'x'; }
+            else if(strcmp(argv[i], "/") == 0) { spl[operator_count].symbol = '/'; }
+            spl[operator_count].symbol_pos = i; // SYBMOL POSITION ASSIGN
+            operator_count += 1; // INCREASE OPERATOR COUNT WHEN FOUND A SYMBOL
         }
-        else if(strcmp(argv[i], "-") == 0)
+    }
+    if(operator_count == 1) { spl[0].symbol_len = argc-2; } // IF THERE IS ONLY ONE SYMBOL THEN ASSING 'symbol_len' TO 'argc' BUT MINUS 2
+    else // IF THERE IS MULTIPLE SYMBOL
+    { 
+        for(int i = 0; operator_count-1 > i; i+=1) // LOOP OPERATOR COUNT MINUS 1 (BECAUSE LAST OPERATOR NEED DIFFERENT MATH)
         {
-            int count = 1;
-            while(1)
-            {
-                if(strcmp(argv[i+count], "+") == 0) { break; }
-                else if(strcmp(argv[i+count], "-") == 0) { break; }
-                else if(strcmp(argv[i+count], "x") == 0) { break; }
-                else if(strcmp(argv[i+count], "/") == 0) { break; }
-                else { count+=1; }
-                if(i + count == argc) { break; }
-            }
-            spl[i-1].symbol = '-';
-            spl[i-1].symbol_pos = i;
-            spl[i-1].symbol_len = count-1;
-            operator_count+=1;
+            spl[i].symbol_len = spl[i+1].symbol_pos - spl[i].symbol_pos - 1; // FIRST SYMBOL POSITION - SECOND SYMBOL POSITION - 1 = FIRST SYMBOL LENGTH
         }
-        else if(strcmp(argv[i], "x") == 0)
-        {
-            int count = 1;
-            while(1)
-            {
-                if(strcmp(argv[i+count], "+") == 0) { break; }
-                else if(strcmp(argv[i+count], "-") == 0) { break; }
-                else if(strcmp(argv[i+count], "x") == 0) { break; }
-                else if(strcmp(argv[i+count], "/") == 0) { break; }
-                else { count+=1; }
-                if(i + count == argc) { break; }
-            }
-            spl[i-1].symbol = 'x';
-            spl[i-1].symbol_pos = i;
-            spl[i-1].symbol_len = count-1;
-            operator_count+=1;
-        }
-        else if(strcmp(argv[i], "/") == 0)
-        {
-            int count = 1;
-            while(1)
-            {
-                if(strcmp(argv[i+count], "+") == 0) { break; }
-                else if(strcmp(argv[i+count], "-") == 0) { break; }
-                else if(strcmp(argv[i+count], "x") == 0) { break; }
-                else if(strcmp(argv[i+count], "/") == 0) { break; }
-                else { count+=1; }
-                if(i + count == argc) { break; }
-            }
-            spl[i-1].symbol = '/';
-            spl[i-1].symbol_pos = i;
-            spl[i-1].symbol_len = count-1;
-            operator_count+=1;
-        }
-        if((spl[i-1].symbol_pos+1) + spl[i-1].symbol_len == argc) { break; } // IF ARGUMENTS OVER
-    } // OPERATOR COUNT HAS BEEN TAKEN AS 'operator_count' VARIABLE
+        spl[operator_count-1].symbol_len = (argc-1) - spl[operator_count-1].symbol_pos; // TOTAL ARGUMENT - 1 - LAST SYMBOL POSITION = LAST SYMBOL LENGTH
+    }
 
     // OPERATION SECTION (MATH SECTION)
     for(int i = 0; operator_count > i; i+=1) // WILL LOOP 'operator_count' TIMES
     {
-        if(spl[i].symbol == '+') // SYMBOL DETECTING
+        if(spl[i].symbol == '+') // DETECT SYMBOL
         {
-            for(int x = 0; spl[i].symbol_len > x; x+=1) // LOOPING 'symbol_len' TIMES
+            spl[i].result_buffer = atoi(argv[spl[i].symbol_pos+1]); // ASSIGN THE FIRST VALUE TO BUFFER
+            for(int x = 1; spl[i].symbol_len > x; x+=1)
             {
-                result += atoi(argv[spl[i].symbol_pos+x+1]);
+                spl[i].result_buffer += atoi(argv[spl[i].symbol_pos+x+1]); // AFTER THE FIRST VALUE WILL ASSIGN AND OPERATE TO RESULT BUFFER
             }
         }
         else if(spl[i].symbol == '-')
         {
-            if(i == 0) // IF OPERATION AT THE FIRST PLACE OF CALCULATING
+            spl[i].result_buffer = atoi(argv[spl[i].symbol_pos+1]);
+            for(int x = 1; spl[i].symbol_len > x; x+=1)
             {
-                result = atoi(argv[spl[i].symbol_pos+1]);
-                for(int x = 1; spl[i].symbol_len > x; x+=1)
-                {
-                    result -= atoi(argv[spl[i].symbol_pos+x+1]);
-                }
-            }
-            else // IF OPERATION NOT AT THE FIRST PLACE
-            {
-                for(int x = 1; spl[i].symbol_len > x; x+=1)
-                {
-                    result -= atoi(argv[spl[i].symbol_pos+x+1]);
-                }
+                spl[i].result_buffer -= atoi(argv[spl[i].symbol_pos+x+1]);
             }
         }
         else if(spl[i].symbol == 'x')
         {
-            if(i == 0)
+            spl[i].result_buffer = atoi(argv[spl[i].symbol_pos+1]);
+            for(int x = 1; spl[i].symbol_len > x; x+=1)
             {
-                result = atoi(argv[spl[i].symbol_pos+1]);
-                for(int x = 1; spl[i].symbol_len > x; x+=1)
-                {
-                    result *= atoi(argv[spl[i].symbol_pos+x+1]);
-                }
-            }
-            else
-            {
-                for(int x = 1; spl[i].symbol_len > x; x+=1)
-                {
-                    result *= atoi(argv[spl[i].symbol_pos+x+1]);
-                }
+                spl[i].result_buffer *= atoi(argv[spl[i].symbol_pos+x+1]);
             }
         }
         else if(spl[i].symbol == '/')
         {
-            if(i == 0)
+            spl[i].result_buffer = atoi(argv[spl[i].symbol_pos+1]);
+            for(int x = 1; spl[i].symbol_len > x; x+=1)
             {
-                result = atoi(argv[spl[i].symbol_pos+1]);
-                for(int x = 1; spl[i].symbol_len > x; x+=1)
-                {
-                    result /= atoi(argv[spl[i].symbol_pos+x+1]);
-                }
-            }
-            else
-            {
-                for(int x = 1; spl[i].symbol_len > x; x+=1)
-                {
-                    result /= atoi(argv[spl[i].symbol_pos+x+1]);
-                }
+                spl[i].result_buffer /= atoi(argv[spl[i].symbol_pos+x+1]);
             }
         }
     }
-
-    for(int i = 0; operator_count > i; i+=1)
+    result = spl[0].result_buffer; // FIRST ASSIGNED SYMBOL BUFFER
+    for(int i = 1; operator_count > i; i+=1) // IN THIS SECTION RESULT BUFFERS WILL OPERATE AS THEY SYMBOLES. THEN WILL ASSIGN TO RESULT.
     {
-        printf("%c, %d, %d.\n", spl[i].symbol, spl[i].symbol_pos, spl[i].symbol_len);
+        if(spl[i].symbol == '+') { result += spl[i].result_buffer; }
+        else if(spl[i].symbol == '-')
+        {
+            if(spl[i].result_buffer < 0)
+            {
+                result += spl[i].result_buffer;
+            }
+            else
+            {
+                result -= spl[i].result_buffer;
+            }
+        }
+        else if(spl[i].symbol == 'x') { result *= spl[i].result_buffer; }
+        else if(spl[i].symbol == '/') { result /= spl[i].result_buffer; }
     }
 
     print_result(result); // RESULT PRINTED

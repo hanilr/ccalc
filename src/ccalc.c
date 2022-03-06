@@ -35,6 +35,19 @@ struct symbols_positions_lengths // IF USER TYPED MULTIPLE OPERATION OR MORE THA
 // BECAUSE PARSER START FROM TOP OF THE CODE, YOU NEED TO LINK TO FUNCTION
 int main(int argc, char *argv[])
 { // ARGC IS TYPED ARGUMENT NUMBER (STARTING FROM 1), ARGV IS ARGUMENTS (STARTING FROM 0)
+    if(argc == 2 && strcmp(argv[1], "-help") == 0) // USER HELP SECTION
+    {
+        printf("%s[Guide] %sThis is a CLI (COMMAND LINE INTERFACE) calculator.\nFull guide at %swww.github.com/hanilr/ccalc.git\n", colorfg_green, colorfg_white, esc_reset);
+        printf("%s[USE]%s ` ccalc + 1 2 ` or ` calc + 1 2 - 2 3 * 3 4 / 4 5 `\n%s[False]%s ` ccalc 1 2 + ` or ` ccalc 1 + 2 - 2 * 3 / 4 `%s", colorfg_green, colorfg_white, colorfg_red, colorfg_white, esc_reset);
+        printf("\n%s[Original repository: www.github.com/hanilr/ccalc.git]%s\n", colorfg_white, esc_reset);
+        return 0;
+    }
+    else if(strcmp(argv[1], "+") == 1 || strcmp(argv[1], "-") == 1 || strcmp(argv[1], "x") == 1 || strcmp(argv[1], "/") == 1) // IF FIRST ARGUMENT A NUMBER
+    {
+        print_error("First argument won't be a number!");
+        return 1; // RETURNING 1 IS AN ERROR FOR OPERATING SYSTEMS
+    }
+
     double result = 0; // WHY VARIABLE DATA TYPE IS DOUBLE? IF USER WANT TO DIVIDE
     int operator_count = 0; // HOW MANY OPERATOR WANTED TO USE?
     struct symbols_positions_lengths spl[16]; // STRUCT DEFINED AS 'spl' 17 TIMES
@@ -60,6 +73,16 @@ int main(int argc, char *argv[])
             spl[i].symbol_len = spl[i+1].symbol_pos - spl[i].symbol_pos - 1; // FIRST SYMBOL POSITION - SECOND SYMBOL POSITION - 1 = FIRST SYMBOL LENGTH
         }
         spl[operator_count-1].symbol_len = (argc-1) - spl[operator_count-1].symbol_pos; // TOTAL ARGUMENT - 1 - LAST SYMBOL POSITION = LAST SYMBOL LENGTH
+    }
+
+    // ERROR HANLE (OPERATOR LENGTH)
+    for(int i = 0; operator_count > i; i+=1)
+    {
+        if(spl[i].symbol_len < 2) // IF OPERATOR LENGTH LESSER THEN 2
+        {
+            print_error("Operator numbers won't be lesser then 2!");
+            return 1;
+        }
     }
 
     // OPERATION SECTION (MATH SECTION)

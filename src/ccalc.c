@@ -14,12 +14,12 @@
 
 void print_result(double result) // ONLY USED FOR RESULT
 {
-    printf("%s[Result] %s%lf%s", colorfg_green, colorfg_white, result, esc_reset);
+    printf("%s[Result] %s%lf%s\n", colorfg_green, colorfg_white, result, esc_reset);
 } // GREEN AND WHITE COLORS USED
 
 void print_error(char *error_reason) // ONLY USED FOR ERRORS
 {
-    printf("%s[ERROR] %s%s%s", colorfg_red, colorfg_white, error_reason, esc_reset);
+    printf("%s[ERROR] %s%s%s\n", colorfg_red, colorfg_white, error_reason, esc_reset);
 } // RED AND WHITE COLORS USED
 
 struct symbols_positions_lengths // IF USER TYPED MULTIPLE OPERATION OR MORE THAN TWO ARGUMENT IN OPERATION
@@ -41,11 +41,6 @@ int main(int argc, char *argv[])
         printf("%s[USE]%s ` ccalc + 1 2 ` or ` calc + 1 2 - 2 3 * 3 4 / 4 5 `\n%s[False]%s ` ccalc 1 2 + ` or ` ccalc 1 + 2 - 2 * 3 / 4 `%s", colorfg_green, colorfg_white, colorfg_red, colorfg_white, esc_reset);
         printf("\n%s[Original repository: www.github.com/hanilr/ccalc.git]%s\n", colorfg_white, esc_reset);
         return 0;
-    }
-    else if(strcmp(argv[1], "+") == 1 || strcmp(argv[1], "-") == 1 || strcmp(argv[1], "x") == 1 || strcmp(argv[1], "/") == 1) // IF FIRST ARGUMENT A NUMBER
-    {
-        print_error("First argument won't be a number!");
-        return 1; // RETURNING 1 IS AN ERROR FOR OPERATING SYSTEMS
     }
 
     double result = 0; // WHY VARIABLE DATA TYPE IS DOUBLE? IF USER WANT TO DIVIDE

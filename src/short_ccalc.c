@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define esc_reset "\033[0m"
 #define colorfg_white "\033[38;2;233;233;233m"
 #define colorfg_red "\033[38;2;200;55;55m"
 #define colorfg_green "\033[38;2;55;200;55m"
 
-void print_result(double result) { printf("%s[Result] %s%lf%s", colorfg_green, colorfg_white, result, esc_reset); }
+void print_result(double result) { printf("%s[Result] %s%lf%s\n", colorfg_green, colorfg_white, result, esc_reset); }
 
-void print_error(char *error_reason) { printf("%s[ERROR] %s%s%s", colorfg_red, colorfg_white, error_reason, esc_reset); }
+void print_error(char *error_reason) { printf("%s[ERROR] %s%s%s\n", colorfg_red, colorfg_white, error_reason, esc_reset); }
 
 struct symbols_positions_lengths
 {
@@ -27,11 +28,6 @@ int main(int argc, char *argv[])
         printf("%s[USE]%s ` ccalc + 1 2 ` or ` calc + 1 2 - 2 3 * 3 4 / 4 5 `\n%s[False]%s ` ccalc 1 2 + ` or ` ccalc 1 + 2 - 2 * 3 / 4 `%s", colorfg_green, colorfg_white, colorfg_red, colorfg_white, esc_reset);
         printf("\n%s[Original repository: www.github.com/hanilr/ccalc.git]%s\n", colorfg_white, esc_reset);
         return 0;
-    }
-    else if(strcmp(argv[1], "+") == 1 || strcmp(argv[1], "-") == 1 || strcmp(argv[1], "x") == 1 || strcmp(argv[1], "/") == 1)
-    {
-        print_error("First argument won't be a number!");
-        return 1;
     }
 
     double result = 0;
